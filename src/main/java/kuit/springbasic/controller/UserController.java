@@ -72,6 +72,23 @@ public class UserController {
     /**
      * TODO: showUserUpdateForm
      */
+    @RequestMapping("/updateForm")
+    public String showUserUpdateForm(HttpServletRequest request,
+                                     @RequestParam("userId") String userId) {
+        log.info("showUserUpdateForm");
+        User user = userRepository.findByUserId(userId);
+
+        HttpSession session = request.getSession();                    // 수정하는 user
+        Object value = UserSessionUtils.getUserFromSession(session);
+
+        if (user != null && value != null) {
+            if (user.equals(value)) {            // 수정되는 user와 수정하는 user가 동일한 경우
+                log.info("hi");
+                return "/user/updateForm";
+            }
+        }
+        return "redirect:/";
+    }
 
     /**
      * TODO: updateUser
