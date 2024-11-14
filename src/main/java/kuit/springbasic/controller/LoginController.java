@@ -63,8 +63,8 @@ public class LoginController {
     }
 
     //@RequestMapping("/login")
-    public String loginV2(@RequestParam() String userId,
-                          @RequestParam() String password,
+    public String loginV2(@RequestParam String userId,
+                          @RequestParam String password,
                           HttpServletRequest request) {
         // @RequestParam을 쓸 때, 키 이름과 담을 변수명이 같으면 키 생략 가능
         log.info("loginV2");
