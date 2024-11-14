@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import kuit.springbasic.util.UserSessionUtils;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.Collection;
+
+import static kuit.springbasic.util.UserSessionUtils.USER_SESSION_KEY;
 
 @Slf4j
 @Controller
@@ -83,7 +86,7 @@ public class QnaController {
      * showUpdateQuestionFormV1 : @RequestParam, HttpServletRequest, Model
      * showUpdateQuestionFormV2 : @RequestParam, @SessionAttribute, Model
      */
-    @RequestMapping("updateForm")
+    //@RequestMapping("updateForm")
     public String showUpdateQuestionFormV1(HttpServletRequest request,
                                            @RequestParam("questionId") String questionId,
                                            Model model) {
@@ -102,7 +105,26 @@ public class QnaController {
         return "/qna/updateForm";
     }
 
+    @RequestMapping("updateForm")
+    public String showUpdateQuestionFormV2(@SessionAttribute(name = USER_SESSION_KEY, required = false) User loggedInUser,
+                                           @RequestParam("questionId") String questionId,
+                                           Model model) {
+        // @SessionAttribute:세션 정보 가져오기
+        log.info("showUpdateQuestionFormV2");
+        if (loggedInUser == null) {          // 회원만 질문 등록 가능
+            return "redirect:/user/loginForm";
+        }
+        Question question = questionRepository.findByQuestionId(Integer.parseInt(questionId));
+        if (!question.isSameUser(loggedInUser)) {
+            throw new IllegalArgumentException();
+        }
+
+        model.addAttribute("question", question);
+        return "/qna/updateForm";
+    }
+
     /**
      * TODO: updateQuestion
      */
+
 }
