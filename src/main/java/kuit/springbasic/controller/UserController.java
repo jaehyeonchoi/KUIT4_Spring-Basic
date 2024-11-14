@@ -1,13 +1,17 @@
 package kuit.springbasic.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import kuit.springbasic.db.UserRepository;
 import kuit.springbasic.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import kuit.springbasic.util.UserSessionUtils;
 
 @Slf4j
 @Controller
@@ -30,22 +34,22 @@ public class UserController {
      * createUserV1 : @RequestParam
      * createUserV2 : @ModelAttribute
      */
-    //@RequestMapping("signup")
+    //@RequestMapping("/signup")
     public String createUserV1(@RequestParam("userId") String userId,
                              @RequestParam("password") String password,
                              @RequestParam("name") String name,
                              @RequestParam("email") String email) {
-        log.info("createUser");
+        log.info("createUserV1");
         User user = new User(userId, password, name, email);
         userRepository.insert(user);
         log.info("user 회원가입 완료");
         return "redirect:/user/list";
     }
 
-    @RequestMapping("signup")
+    @RequestMapping("/signup")
     public String createUserV2(@ModelAttribute User user) {
-        // @RequestParam을 쓸 때, 키 이름과 담을 변수명이 같으면 키 생략 가능
-        log.info("createUser");
+        // @ModelAttribute:모델 객체에 파라미터들을 넘겨서 생성 및 초기화
+        log.info("createUserV2");
         userRepository.insert(user);
         log.info("user 회원가입 완료");
         return "redirect:/user/list";
@@ -54,6 +58,16 @@ public class UserController {
     /**
      * TODO: showUserList
      */
+    @RequestMapping("/list")
+    public String showUserList(HttpServletRequest request, Model model) {
+        log.info("showUserList");
+        HttpSession session = request.getSession();
+        if (UserSessionUtils.isLoggedIn(session)) {
+            model.addAttribute("users", userRepository.findAll());
+            return "/user/list";
+        }
+        return "redirect:/user/loginForm";
+    }
 
     /**
      * TODO: showUserUpdateForm
