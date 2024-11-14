@@ -42,7 +42,14 @@ public class QnaController {
     /**
      * TODO: showQuestionForm
      */
-
+    @RequestMapping("/form")
+    public String showQuestionForm(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        if (UserSessionUtils.isLoggedIn(session)) {          // 회원만 질문 등록 가능
+            return "/qna/form";
+        }
+        return "redirect:/user/loginForm";
+    }
 
     /**
      * TODO: createQuestion
