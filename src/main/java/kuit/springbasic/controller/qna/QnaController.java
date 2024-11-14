@@ -6,6 +6,7 @@ import kuit.springbasic.db.AnswerRepository;
 import kuit.springbasic.db.QuestionRepository;
 import kuit.springbasic.domain.Answer;
 import kuit.springbasic.domain.Question;
+import kuit.springbasic.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -77,12 +78,29 @@ public class QnaController {
         return "redirect:/";
     }
 
-
     /**
      * TODO: showUpdateQuestionForm
      * showUpdateQuestionFormV1 : @RequestParam, HttpServletRequest, Model
      * showUpdateQuestionFormV2 : @RequestParam, @SessionAttribute, Model
      */
+    @RequestMapping("updateForm")
+    public String showUpdateQuestionFormV1(HttpServletRequest request,
+                                           @RequestParam("questionId") String questionId,
+                                           Model model) {
+        log.info("showUpdateQuestionFormV1");
+        HttpSession session = request.getSession();
+        if (!UserSessionUtils.isLoggedIn(session)) {          // 회원만 질문 등록 가능
+            return "redirect:/user/loginForm";
+        }
+        Question question = questionRepository.findByQuestionId(Integer.parseInt(questionId));
+        User user = UserSessionUtils.getUserFromSession(session);
+        if (!question.isSameUser(user)) {
+            throw new IllegalArgumentException();
+        }
+
+        model.addAttribute("question", question);
+        return "/qna/updateForm";
+    }
 
     /**
      * TODO: updateQuestion
