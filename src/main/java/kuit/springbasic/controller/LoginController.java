@@ -100,7 +100,7 @@ public class LoginController {
     @RequestMapping("/login")
     public String loginV4(@ModelAttribute User loggedInUser,
                           HttpServletRequest request) {
-        // @RequestParam을 쓸 때, 키 이름과 담을 변수명이 같으면 키 생략 가능
+        // @ModelAttribute:모델 객체에 파라미터들을 넘겨서 생성 및 초기화
         log.info("loginV4");
         User user = userRepository.findByUserId(loggedInUser.getUserId());
 
