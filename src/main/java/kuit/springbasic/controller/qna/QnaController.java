@@ -44,6 +44,7 @@ public class QnaController {
      */
     @RequestMapping("/form")
     public String showQuestionForm(HttpServletRequest request) {
+        log.info("showQuestionForm");
         HttpSession session = request.getSession();
         if (UserSessionUtils.isLoggedIn(session)) {          // 회원만 질문 등록 가능
             return "/qna/form";
@@ -56,6 +57,16 @@ public class QnaController {
      * createQuestionV1 : @RequestParam
      * createQuestionV2 : @ModelAttribute
      */
+    @RequestMapping("/create")
+    public String createQuestionV1(@RequestParam("writer") String writer,
+                                 @RequestParam("title") String title,
+                                 @RequestParam("contents") String contents) {
+        log.info("createQuestionV1");
+        Question question = new Question(writer, title, contents, 0);
+        questionRepository.insert(question);
+
+        return "redirect:/";
+    }
 
 
     /**
