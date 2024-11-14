@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import kuit.springbasic.util.UserSessionUtils;
@@ -57,12 +58,20 @@ public class QnaController {
      * createQuestionV1 : @RequestParam
      * createQuestionV2 : @ModelAttribute
      */
-    @RequestMapping("/create")
+    //@RequestMapping("/create")
     public String createQuestionV1(@RequestParam("writer") String writer,
                                  @RequestParam("title") String title,
                                  @RequestParam("contents") String contents) {
         log.info("createQuestionV1");
         Question question = new Question(writer, title, contents, 0);
+        questionRepository.insert(question);
+
+        return "redirect:/";
+    }
+
+    @RequestMapping("/create")
+    public String createQuestionV2(@ModelAttribute Question question) {
+        log.info("createQuestionV2");
         questionRepository.insert(question);
 
         return "redirect:/";
