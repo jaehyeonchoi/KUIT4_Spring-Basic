@@ -95,5 +95,14 @@ public class UserController {
      * updateUserV1 : @RequestParam
      * updateUserV2 : @ModelAttribute
      */
-
+    @RequestMapping("update")
+    public String updateUserV1(@RequestParam("userId") String userId,
+                               @RequestParam("password") String password,
+                               @RequestParam("name") String name,
+                               @RequestParam("email") String email) {
+        log.info("updateUserV1");
+        User modifiedUser = new User(userId, password, name, email);
+        userRepository.update(modifiedUser);
+        return "redirect:/user/list";
+    }
 }
