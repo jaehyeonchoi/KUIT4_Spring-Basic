@@ -86,7 +86,7 @@ public class QnaController {
      * showUpdateQuestionFormV1 : @RequestParam, HttpServletRequest, Model
      * showUpdateQuestionFormV2 : @RequestParam, @SessionAttribute, Model
      */
-    //@RequestMapping("updateForm")
+    //@RequestMapping("/updateForm")
     public String showUpdateQuestionFormV1(HttpServletRequest request,
                                            @RequestParam("questionId") String questionId,
                                            Model model) {
@@ -105,7 +105,7 @@ public class QnaController {
         return "/qna/updateForm";
     }
 
-    @RequestMapping("updateForm")
+    @RequestMapping("/updateForm")
     public String showUpdateQuestionFormV2(@SessionAttribute(name = USER_SESSION_KEY, required = false) User loggedInUser,
                                            @RequestParam("questionId") String questionId,
                                            Model model) {
@@ -126,5 +126,22 @@ public class QnaController {
     /**
      * TODO: updateQuestion
      */
+    @RequestMapping("/update")
+    public String updateQuestion(@SessionAttribute(name = USER_SESSION_KEY, required = false) User loggedInUser,
+                                 @RequestParam("questionId") String questionId,
+                                 @RequestParam("title") String title,
+                                 @RequestParam("contents") String contents) {
+        log.info("update");
+        if (loggedInUser == null) {
+            return "redirect:/user/loginForm";
+        }
 
+        Question question = questionRepository.findByQuestionId(Integer.parseInt(questionId));
+        if (!question.isSameUser(loggedInUser)) {
+            throw new IllegalArgumentException("로그인된 유저와 질문 작성자가 다르면 질문을 수정할 수 없습니다.");
+        }
+        question.updateTitleAndContents(title, contents);
+        questionRepository.update(question);
+        return "redirect:/";
+    }
 }
